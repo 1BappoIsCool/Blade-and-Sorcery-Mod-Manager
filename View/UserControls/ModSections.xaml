@@ -1,0 +1,46 @@
+﻿<UserControl x:Class="Blade_Sorcery_ModManager.View.UserControls.ModSections"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Blade_Sorcery_ModManager.View.UserControls"
+             mc:Ignorable="d" 
+             Height="70" Width="700">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="85*"/>
+            <ColumnDefinition Width="15*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="10*"/>
+                <ColumnDefinition Width="90*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Name="ModNumber"  Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding ModNumber, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                       FontFamily="Arial" FontWeight="DemiBold" FontSize="18"
+                       Foreground="GhostWhite"/>
+            <TextBlock Name="ModName"  Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="15, 0, 0, 0" Text="{Binding ModName, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                       FontFamily="Arial" FontWeight="DemiBold" FontSize="18"
+                       Foreground="GhostWhite">
+                <Run Text="{Binding ModName, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+            </TextBlock>
+        </Grid>
+
+        <Rectangle Grid.ColumnSpan="2" Fill="#373A3C" Panel.ZIndex="-1"/>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Button Grid.Row="0" Margin="6" Content="Enabled" x:Name="EnableDisableButton" Click="EnableDisableButton_Click"
+                    FontFamily="Arial" FontWeight="Medium"  FontSize="15"
+                    Background="{StaticResource EnabledColour}" BorderBrush="Transparent" Foreground="GhostWhite" Style="{DynamicResource EnableDisableButtonStyle}"/>
+
+            <Button Grid.Row="1" Margin="6" Content="Uninstall"
+                    FontFamily="Arial" FontWeight="Medium" FontSize="15"
+                    Background="{StaticResource DisabledColour}" BorderBrush="Transparent" Foreground="GhostWhite" Style="{DynamicResource CustomButton}"/>
+
+        </Grid>
+    </Grid>
+</UserControl>

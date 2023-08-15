@@ -1,0 +1,33 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="DisabledColour" Color="#A03636"/>
+    <SolidColorBrush x:Key="EnabledColour" Color="#6DC176"/>
+
+    <Style x:Key="EnableDisableButtonStyle" TargetType="Button">
+        <Setter Property="Content" Value="Enable"/>
+        <Setter Property="Background" Value="{StaticResource DisabledColour}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border 
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        CornerRadius="5">
+                    <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="Tag" Value="Enabled">
+                <Setter Property="Content" Value="Enable"/>
+                <Setter Property="Background" Value="{StaticResource DisabledColour}" />
+                
+            </Trigger>
+            <Trigger Property="Tag" Value="Disabled">
+                <Setter Property="Content" Value="Enable"/>
+                <Setter Property="Background" Value="{StaticResource EnabledColour}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+</ResourceDictionary>
