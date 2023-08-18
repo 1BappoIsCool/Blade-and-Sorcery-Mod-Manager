@@ -48,14 +48,6 @@
                 <RowDefinition Height="33.333*"/>
                 <RowDefinition Height="33.333*"/>
             </Grid.RowDefinitions>
-
-            <Button Grid.Row="0" Content="Mods" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10, 0, 5, 0"
-                       FontFamily="Arial" FontSize="24" FontWeight="Medium"
-                       Foreground="GhostWhite" Background="Transparent" BorderBrush="Transparent" Click="Button_Click">
-                <Button.Effect>
-                    <DropShadowEffect Color="#434343" BlurRadius="1" Direction="-100" ShadowDepth="3"/>
-                </Button.Effect>
-            </Button>
         </Grid>
     </Grid>
 </Window>
