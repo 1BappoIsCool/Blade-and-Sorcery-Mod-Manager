@@ -9,7 +9,7 @@
         Title="Blade &amp; Sorcery Mod Manager" Height="600" Width="860"
         MinHeight="600" MaxHeight="600"
         MinWidth="860" MaxWidth="860"
-        Background="#3E3E3E">
+        Background="#191919">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="10*"/>
@@ -25,7 +25,7 @@
         <TextBlock Grid.Row="0" Grid.Column="1" Text="Blade &amp; Sorcery Mod Manager"
                    VerticalAlignment="Center" HorizontalAlignment="Center"
                    FontSize="28" FontWeight="DemiBold" FontFamily="Arial"
-                   Foreground="#E4B17C">
+                   Foreground="#E4B17C" Margin="0,0,30,0">
             <TextBlock.Effect>
                 <DropShadowEffect Color="#4B4B4B" BlurRadius="1" Direction="-100" ShadowDepth="3"/>
             </TextBlock.Effect>
@@ -33,9 +33,9 @@
 
         <Button Grid.Row="0" Grid.Column="1" x:Name="btnOpenModFolder" Content="Open Mods Folder" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,10,0" Padding="1"
                 FontFamily="Arial" FontSize="18" FontWeight="Medium"
-                Foreground="GhostWhite" Background="#646464" Style="{StaticResource CustomButton}" Click="btnOpenModFolder_Click"></Button>
+                Foreground="GhostWhite" Background="Transparent" Style="{StaticResource CustomButton}" Click="btnOpenModFolder_Click"></Button>
 
-        <ScrollViewer Grid.Column="1" Grid.Row="1">
+        <ScrollViewer Grid.Column="1" Grid.Row="1" Margin="0,0,0,35">
             <Grid x:Name="ModList">
                 <Grid.RowDefinitions>
                 </Grid.RowDefinitions>

@@ -25,15 +25,61 @@ namespace Blade_Sorcery_ModManager
     {
         ConfigManager config = new ConfigManager();
 
+        private ModSections modSections;
+
         public MainWindow()
         {
+            modSections = new ModSections();
+
             InitializeComponent();
             InitializeModList();
+            modSections.InitModStates();
         }
 
-       
+        private ModSections FindModSectionByName(string modName)
+        {
+            return ModList.Children.OfType<ModSections>().FirstOrDefault(modSection =>
+                modSection.ModName.Text.Equals(modName, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private void UpdDisabledBtns()
+        {
+            try
+            {
+                string[] disabledFolders = Directory.GetDirectories(config.ModDirectory, "*_DisabledPlaceholder*");
+
+                foreach (string disabledFolder in disabledFolders)
+                {
+                    string manifestPath = PathIO.Combine(disabledFolder, "manifest.json");
+
+                    if (File.Exists(manifestPath))
+                    {
+                        string manifestData = File.ReadAllText(manifestPath, Encoding.UTF8);
+                        dynamic manifestJson = Newtonsoft.Json.JsonConvert.DeserializeObject(manifestData);
+                        string modName = manifestJson.Name ?? "Unknown Mod";
+
+                        // Find the ModSections control with the corresponding ModName
+                        ModSections modSection = FindModSectionByName(modName);
+
+                        if (modSection != null)
+                        {
+                            // Update the button content and background color for disabled mods
+                            modSection.EnableDisableButton.Content = "Disabled";
+                            modSection.EnableDisableButton.Background = Brushes.Red;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error updating buttons for disabled mods: {ex.Message}");
+            }
+        }
+
         private void InitializeModList()
         {
+            UpdDisabledBtns();
+
             try
             {
                 string modInfoFilePath = PathIO.Combine(config.ModDirectory, "mod_info.txt");

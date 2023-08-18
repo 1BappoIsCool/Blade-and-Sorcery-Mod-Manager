@@ -23,34 +23,29 @@ namespace Blade_Sorcery_ModManager
     {
 
         ConfigManager configManager = new ConfigManager();
+        ModReader reader = new ModReader();
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
-            ReadModInfo();
+            configManager.DisabledMods = configManager.ModDirectory + @"\_disabled";
+            configManager.SaveConfiguration();
 
-            // Check if manager.ini exists and if ModDirectory is set
+            // Check if the appropriate paths are set
 
-            string currentDirectory = Environment.CurrentDirectory;
-            string disabled = configManager.DisabledMods;
-            bool disabledExists = Directory.Exists(disabled);
-
-            if (string.IsNullOrEmpty(configManager.DisabledMods))
+            if (!string.IsNullOrEmpty(configManager.ModDirectory)) // Check if DisabledMods is set
             {
-                configManager.DisabledMods = currentDirectory + @"\_disabled";
-                configManager.SaveConfiguration();
-            }
-
-            if (!disabledExists)
-            {
-                Directory.CreateDirectory(PathIO.Combine(configManager.DisabledMods, @"\_disabled"));
+                if (!Directory.Exists(configManager.ModDirectory)) // Check if the directory does not exist
+                {
+                    Directory.CreateDirectory(configManager.ModDirectory); // Create the _disabled directory
+                }
             }
 
             if (string.IsNullOrEmpty(configManager.ModDirectory))
             {
                 // Show a message box asking the user for the mod directory
-                MessageBoxResult result = MessageBox.Show("Mod directory not found in the INI file. Do you want to set it now?", "Set Mod Directory", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                MessageBoxResult result = MessageBox.Show("A Mods folder was not found, would you like to set one now?", "Set Mod Directory", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
                     // Show a folder selection dialog to select the mod directory
@@ -75,38 +70,8 @@ namespace Blade_Sorcery_ModManager
                 }
             }
 
-        }
+            reader.ReadModInfo();
 
-        private void ReadModInfo()
-        {
-            string modDir = configManager.ModDirectory;
-
-            string modInfoPath = PathIO.Combine(modDir, "mod_info.txt");
-
-            using (StreamWriter writer = new StreamWriter(modInfoPath, false, Encoding.UTF8))
-            {
-                string[] manifestFiles = Directory.GetFiles(modDir, "manifest.json", SearchOption.AllDirectories);
-
-                foreach (string manifestPath in manifestFiles) 
-                {
-                    try
-                    {
-                        string manifestData = File.ReadAllText(manifestPath, Encoding.UTF8);
-                        dynamic manifestJson = Newtonsoft.Json.JsonConvert.DeserializeObject(manifestData);
-                        string modName = manifestJson.Name ?? "Unknown Mod";
-                        string modVersion = manifestJson.ModVersion ?? "Unknown Version";
-                        string gameVersion = manifestJson.GameVersion ?? "Unknown Game Version";
-
-                        writer.WriteLine($"(Mod Name: {modName}, Version: {modVersion}, Game Version: {gameVersion})");
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine($"Error reading: {manifestPath}");
-                        Console.WriteLine($"Except message: {e.Message}");
-                        Console.WriteLine($"Skipping this manifest file.");
-                    }
-                }
-            }
         }
     }
 }

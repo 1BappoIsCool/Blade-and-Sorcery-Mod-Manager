@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Blade_Sorcery_ModManager.View.UserControls"
              mc:Ignorable="d" 
-             Height="70" Width="700">
+             Height="70" Width="700"
+             Padding="0,3,0,3">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="85*"/>
@@ -26,7 +27,7 @@
             </TextBlock>
         </Grid>
 
-        <Rectangle Grid.ColumnSpan="2" Fill="#373A3C" Panel.ZIndex="-1"/>
+        <Rectangle Grid.ColumnSpan="2" Fill="#323232" Panel.ZIndex="-1"/>
 
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
@@ -35,11 +36,11 @@
             </Grid.RowDefinitions>
             <Button Grid.Row="0" Margin="6" Content="Enabled" x:Name="EnableDisableButton" Click="EnableDisableButton_Click"
                     FontFamily="Arial" FontWeight="Medium"  FontSize="15"
-                    Background="{StaticResource EnabledColour}" BorderBrush="Transparent" Foreground="GhostWhite" Style="{DynamicResource EnableDisableButtonStyle}"/>
+                    Background="Green" BorderBrush="Transparent" Foreground="GhostWhite" Style="{DynamicResource EnableDisableButtonStyle}"/>
 
             <Button Grid.Row="1" Margin="6" Content="Uninstall"
                     FontFamily="Arial" FontWeight="Medium" FontSize="15"
-                    Background="{StaticResource DisabledColour}" BorderBrush="Transparent" Foreground="GhostWhite" Style="{DynamicResource CustomButton}"/>
+                    Background="Red" BorderBrush="Transparent" Foreground="GhostWhite" Style="{DynamicResource CustomButton}"/>
 
         </Grid>
     </Grid>

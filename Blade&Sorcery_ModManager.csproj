@@ -75,6 +75,7 @@
     <Compile Include="ModDirectoryInputDialog.xaml.cs">
       <DependentUpon>ModDirectoryInputDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ModReader.cs" />
     <Compile Include="View\UserControls\ModSections.xaml.cs">
       <DependentUpon>ModSections.xaml</DependentUpon>
     </Compile>
