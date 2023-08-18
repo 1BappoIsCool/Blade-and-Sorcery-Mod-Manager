@@ -24,12 +24,7 @@ namespace Blade_Sorcery_ModManager.View.UserControls
 
     public partial class ModSections : UserControl
     {
-        ModReader reader = new ModReader();
-
-
         ConfigManager config = new ConfigManager();
-
-        private string statesFilePath = PathIO.Combine(Environment.CurrentDirectory, "mod_states.txt");
 
         public static readonly DependencyProperty ModNumberProperty =
             DependencyProperty.Register("ModNumber", typeof(int), typeof(ModSections), new PropertyMetadata(1));
@@ -55,60 +50,6 @@ namespace Blade_Sorcery_ModManager.View.UserControls
         {
             InitializeComponent();
             EnableDisableButton.Tag = "Enabled";
-        }
-
-        public void InitModStates()
-        {
-            string[] modInfoLines = File.ReadAllLines(PathIO.Combine(config.ModDirectory, "mod_info.txt"));
-            List<string> modStates = new List<string>();
-
-            foreach (string line in modInfoLines)
-            {
-                if (!string.IsNullOrWhiteSpace(line) && line.Contains("(Mod Name:"))
-                {
-                    int startIndex = line.IndexOf("(Mod Name:") + "(Mod Name:".Length;
-                    int endIndex = line.IndexOf(",", startIndex);
-                    string modName = line.Substring(startIndex, endIndex - startIndex).Trim();
-
-                    // Read the mod's state from mod_states.txt
-                    string modState = "Enabled";
-                    string[] statesLines = File.ReadAllLines(statesFilePath);
-                    foreach (string stateLine in statesLines)
-                    {
-                        string[] parts = stateLine.Split(',');
-                        if (parts.Length == 2 && parts[0].Trim() == modName)
-                        {
-                            modState = parts[1].Trim();
-                            break;
-                        }
-                    }
-
-                    modStates.Add($"{modName}, {modState}");
-                }
-            }
-
-            // Write the modified content back to mod_states.txt
-            File.WriteAllLines(statesFilePath, modStates);
-        }
-
-        public void UpdateModState(string modName, bool enabled)
-        {
-            // Read the content of the mod_states.txt file
-            List<string> modStates = File.ReadAllLines(statesFilePath).ToList();
-
-            // Find the mod entry and update its state
-            for (int i = 0; i < modStates.Count; i++)
-            {
-                string[] parts = modStates[i].Split(',');
-                if (parts.Length == 2 && parts[0].Trim() == modName)
-                {
-                    modStates[i] = $"{modName}, {(enabled ? "Enabled" : "Disabled")}";
-                    break;
-                }
-            }
-
-            // Write the modified content back to the mod_states.txt file
-            File.WriteAllLines(statesFilePath, modStates);
         }
 
         public void LoadModData(string filePath, int lineNumber)
@@ -153,8 +94,6 @@ namespace Blade_Sorcery_ModManager.View.UserControls
                 // Delete the mod folder
                 Directory.Delete(modFolderPath, true);
 
-                UpdateModState(modName, false);
-
                 button.Content = "Disabled";
                 button.Background = Brushes.Red;
                 button.Tag = "Disabled"; // Update the tag
@@ -175,8 +114,6 @@ namespace Blade_Sorcery_ModManager.View.UserControls
 
                 // Delete the disabled folder
                 Directory.Delete(disabledFolderPath, true);
-
-                UpdateModState(modName, true);
 
                 button.Content = "Enabled";
                 button.Background = Brushes.Green;

@@ -7,8 +7,7 @@
         xmlns:UserControls="clr-namespace:Blade_Sorcery_ModManager.View.UserControls"
         mc:Ignorable="d"
         Title="Blade &amp; Sorcery Mod Manager" Height="600" Width="860"
-        MinHeight="600" MaxHeight="600"
-        MinWidth="860" MaxWidth="860"
+        ResizeMode="NoResize"
         Background="#191919">
     <Grid>
         <Grid.ColumnDefinitions>
