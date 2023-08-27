@@ -8,6 +8,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Styles/CustomButtonStyle.xaml"/>
                 <ResourceDictionary Source="/Styles/EnableDisableStyle.xaml"/>
+                <ResourceDictionary Source="/Styles/Scroll.xaml"/>
+                <ResourceDictionary Source="/Styles/Colours.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

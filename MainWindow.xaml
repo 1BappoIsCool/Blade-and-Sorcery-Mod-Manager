@@ -3,50 +3,48 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Blade_Sorcery_ModManager"
         xmlns:UserControls="clr-namespace:Blade_Sorcery_ModManager.View.UserControls"
         mc:Ignorable="d"
         Title="Blade &amp; Sorcery Mod Manager" Height="600" Width="860"
         ResizeMode="NoResize"
-        Background="#191919">
-    <Grid>
+        WindowStartupLocation="CenterScreen"
+        Background="#202020"
+        Drop="Window_Drop">
+    <Grid AllowDrop="True">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="10*"/>
-            <ColumnDefinition Width="90*"/>
+            <ColumnDefinition Width="25*"/>
+            <ColumnDefinition Width="75*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
-            <RowDefinition Height="560"/>
+            <RowDefinition Height="65"/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Image Grid.Row="0" Grid.Column="0" Source="/peepoGlad.png" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <Border Grid.Row="0" Grid.Column="0" Background="#282828" CornerRadius="7" Margin="0,0,10,10" Panel.ZIndex="0">
+            <Image Grid.Row="0" Grid.Column="0" Source="/Assets/peepoGlad.png" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,5" Opacity="0.5"/>
+        </Border>
+            <Border Grid.Row="0" Grid.Column="1" Background="#282828" CornerRadius="7" Margin="0,0,10,10"/>
 
-        <TextBlock Grid.Row="0" Grid.Column="1" Text="Blade &amp; Sorcery Mod Manager"
-                   VerticalAlignment="Center" HorizontalAlignment="Center"
-                   FontSize="28" FontWeight="DemiBold" FontFamily="Arial"
-                   Foreground="#E4B17C" Margin="0,0,30,0">
-            <TextBlock.Effect>
-                <DropShadowEffect Color="#4B4B4B" BlurRadius="1" Direction="-100" ShadowDepth="3"/>
-            </TextBlock.Effect>
-        </TextBlock>
-
-        <Button Grid.Row="0" Grid.Column="1" x:Name="btnOpenModFolder" Content="Open Mods Folder" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,10,0" Padding="1"
+        <Button Grid.Row="0" Grid.Column="1" x:Name="btnOpenModFolder" Content="Open Mods Folder" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,25,0" Padding="1"
                 FontFamily="Arial" FontSize="18" FontWeight="Medium"
-                Foreground="GhostWhite" Background="Transparent" Style="{StaticResource CustomButton}" Click="btnOpenModFolder_Click"></Button>
+                Foreground="GhostWhite" Background="Transparent" Style="{DynamicResource CustomButton}" Click="btnOpenModFolder_Click"/>
+        
+        <TextBlock Grid.Row="0" Grid.Column="1"  Text="Blade &amp; Sorcery Mod Manager"
+                   VerticalAlignment="Center" HorizontalAlignment="Left"
+                   FontSize="28" FontWeight="DemiBold" FontFamily="Arial"
+                   Foreground="#2272FF" Margin="10,-6,0,0"/>
 
-        <ScrollViewer Grid.Column="1" Grid.Row="1" Margin="0,0,0,35">
-            <Grid x:Name="ModList">
-                <Grid.RowDefinitions>
-                </Grid.RowDefinitions>
-            </Grid>
-        </ScrollViewer>
+        <Border Background="#282828" CornerRadius="7" Grid.Column="1" Grid.Row="1" Margin="0,0,10,10">
+            <ScrollViewer Grid.Column="1" Grid.Row="1" Padding="2">
+                <Grid x:Name="ModList">
+                    <Grid.RowDefinitions>
+                    </Grid.RowDefinitions>
+                </Grid>
+            </ScrollViewer>
+        </Border>
 
-        <Grid Grid.Row="1" Grid.Column="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="33.333*"/>
-                <RowDefinition Height="33.333*"/>
-                <RowDefinition Height="33.333*"/>
-            </Grid.RowDefinitions>
-        </Grid>
+        <Border Grid.Column="0" Grid.Row="1" Background="#282828" Margin="0,0,10,10" CornerRadius="7">
+
+        </Border>
     </Grid>
 </Window>

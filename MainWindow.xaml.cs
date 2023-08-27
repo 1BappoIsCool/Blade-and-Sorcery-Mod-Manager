@@ -18,10 +18,13 @@ using System.IO;
 using PathIO = System.IO.Path;
 using System.Diagnostics;
 using Microsoft.Win32;
+using System.Data.SQLite;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.IO.Compression;
 
 namespace Blade_Sorcery_ModManager
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : System.Windows.Window
     {
         ConfigManager config = new ConfigManager();
 
@@ -30,41 +33,35 @@ namespace Blade_Sorcery_ModManager
         public MainWindow()
         {
             modSections = new ModSections();
-
             InitializeComponent();
             InitializeModList();
         }
 
+        static string connectString = "Data Source=mod_database.db;Version=3;";
+        DataManager _manager = new DataManager(connectString);
+
         private void InitializeModList()
         {
+            List<Tuple<string, string, string>> modData = _manager.ReadData();
 
-            try
+            for (int lineNumber = 0; lineNumber < modData.Count; lineNumber++)
             {
-                string modInfoFilePath = PathIO.Combine(config.ModDirectory, "mod_info.txt");
+                // Add a new RowDefinition for each user control
+                ModList.RowDefinitions.Add(new RowDefinition { Height = new GridLength(80) });
 
-                if (File.Exists(modInfoFilePath))
-                {
-                    string[] lines = File.ReadAllLines(modInfoFilePath);
-                    for (int lineNumber = 0; lineNumber < lines.Length; lineNumber++)
-                    {
-                        // Add a new RowDefinition for each user control
-                        ModList.RowDefinitions.Add(new RowDefinition { Height = new GridLength(80) });
+                ModSections modSection = new ModSections();
+                modSection.HorizontalAlignment = HorizontalAlignment.Left;
+                modSection.Margin = new Thickness(10, 0, 0, 0);
+                modSection.Padding = new Thickness(1);
+                modSection.SetValue(Grid.RowProperty, ModList.RowDefinitions.Count - 1);
 
-                        ModSections modSection = new ModSections();
-                        modSection.HorizontalAlignment = HorizontalAlignment.Left;
-                        modSection.Margin = new Thickness(10, 0, 0, 0);
-                        modSection.Padding = new Thickness(1);
-                        modSection.SetValue(Grid.RowProperty, ModList.RowDefinitions.Count - 1);
+                Tuple<string, string, string> modTuple = modData[lineNumber];
+                modSection.LoadModData(modTuple.Item1, modTuple.Item2, modTuple.Item3);
 
-                        modSection.LoadModData(modInfoFilePath, lineNumber);
+                // Set the ModNumber directly with the loop index (line number)
+                modSection.ModNumber.Text = (lineNumber + 1).ToString();
 
-                        ModList.Children.Add(modSection);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error: {ex.Message}");
+                ModList.Children.Add(modSection);
             }
         }
 
@@ -103,6 +100,47 @@ namespace Blade_Sorcery_ModManager
 
                 }
             }
+        }
+
+        public ModSections FindModSectionByName(string modName)
+        {
+            foreach (var child in ModList.Children)
+            {
+                if (child is ModSections modSection && modSection.ModName.Text == modName)
+                {
+                    return modSection;
+                }
+            }
+            return null;
+        }
+
+        private async void Window_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                foreach (string file in files)
+                {
+                    string extension = PathIO.GetExtension(file).ToLower();
+
+                    if (extension == ".zip" || extension == ".rar")
+                    {
+                        await InstallAsync(file);
+                    }
+                }
+            }
+        }
+
+        private async Task InstallAsync(string filePath)
+        {
+            // Update UI as installation starts
+            // Show progress bar, set progress to 0
+
+            // Get the destination path from the textbox
+            string destinationPath = config.ModDirectory;
+
+            // Extract the entire archive to the destination directory
+            ZipFile.ExtractToDirectory(filePath, destinationPath);
         }
     }
 }

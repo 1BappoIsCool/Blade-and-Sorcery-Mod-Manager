@@ -13,6 +13,10 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Windows.Shapes;
 using System.Text;
 using Newtonsoft.Json;
+using Blade_Sorcery_ModManager.View.UserControls;
+using System.Drawing;
+using static Blade_Sorcery_ModManager.DataManager;
+using System.Windows.Markup;
 
 namespace Blade_Sorcery_ModManager
 {
@@ -21,14 +25,17 @@ namespace Blade_Sorcery_ModManager
     public partial class App : Application
 #pragma warning restore VSSpell001 // Spell Check
     {
-
         ConfigManager configManager = new ConfigManager();
-        ModReader reader = new ModReader();
+        
+        private MainWindow _mainWindow = new MainWindow();
+        
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
+            string connectString = "Data Source=mod_database.db;Version=3;";
+    
             configManager.DisabledMods = configManager.ModDirectory + @"\_disabled";
             configManager.SaveConfiguration();
 
@@ -70,8 +77,71 @@ namespace Blade_Sorcery_ModManager
                 }
             }
 
-            reader.ReadModInfo();
+            List<(string ModName, string State)> modStates;
+            using (DataManager _manager = new DataManager(connectString))
+            {
+                try
+                {
+                    _manager.CreateTables();
+                    modStates = _manager.GetAllStates();
+                }
+                catch (Exception ex)
+                {
+                    // Handle any exceptions that might occur during database operations
+                    MessageBox.Show($"Error while retrieving mod states: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+            }
 
+            foreach (var modState in modStates)
+            {
+                string modName = modState.ModName;
+                string state = modState.State;
+
+                try
+                {
+                    ModSections modSection = _mainWindow.FindModSectionByName(modName);
+                    if (modSection != null)
+                    {
+                        if (state == ModState.Enabled.ToString())
+                        {
+                            modSection.EnableDisableButton.Content = "Enabled";
+                            modSection.EnableDisableButton.Background = System.Windows.Media.Brushes.Green;
+                            modSection.EnableDisableButton.Tag = "Enabled";
+                        }
+                        else if (state == ModState.Disabled.ToString())
+                        {
+                            modSection.EnableDisableButton.Content = "Disabled";
+                            modSection.EnableDisableButton.Background = System.Windows.Media.Brushes.Red;
+                            modSection.EnableDisableButton.Tag = "Disabled";
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Handle any exceptions that might occur during UI interaction
+                    MessageBox.Show($"Error while updating UI for mod {modName}: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    // You can choose to continue processing other mod states or return here, based on your requirement.
+                }
+            }
+
+            List<Tuple<string, string, string>> modData;
+            using (DataManager _manager = new DataManager(connectString))
+            {
+                modData = _manager.GatherData();
+            }
+
+            using (DataManager _manager = new DataManager(connectString))
+            {
+                foreach(var data in modData)
+                {
+                    string modName = data.Item1;
+                    string modVersion = data.Item2;
+                    string gameVersion = data.Item3;
+
+                    _manager.InsertData(modName, modVersion, gameVersion);
+                }
+            }
         }
     }
 }

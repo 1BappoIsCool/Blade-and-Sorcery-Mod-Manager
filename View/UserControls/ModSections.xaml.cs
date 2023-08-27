@@ -15,6 +15,8 @@ using System.Windows.Shapes;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using PathIO = System.IO.Path;
+using System.Data.SQLite;
+using System.Runtime.CompilerServices;
 
 namespace Blade_Sorcery_ModManager.View.UserControls
 {
@@ -44,7 +46,7 @@ namespace Blade_Sorcery_ModManager.View.UserControls
         {
             get { return (string)GetValue(ModNameProperty); }
             set { SetValue(ModNameProperty, value); }
-        }
+        }  
 
         public ModSections()
         {
@@ -52,24 +54,15 @@ namespace Blade_Sorcery_ModManager.View.UserControls
             EnableDisableButton.Tag = "Enabled";
         }
 
-        public void LoadModData(string filePath, int lineNumber)
+        static string connectString = "Data Source=mod_database.db;Version=3;";
+
+        public void LoadModData(string modName, string modVersion, string gameVersion)
         {
             try
             {
-                string[] lines = File.ReadAllLines(filePath);
-                if (lineNumber >= 0 && lineNumber < lines.Length)
-                {
-                    string line = lines[lineNumber];
-                    if (!string.IsNullOrWhiteSpace(line) && line.Contains("(Mod Name:"))
-                    {
-                        int startIndex = line.IndexOf("(Mod Name:") + "(Mod Name:".Length;
-                        int endIndex = line.IndexOf(",", startIndex);
-                        ModName.Text = line.Substring(startIndex, endIndex - startIndex).Trim();
-                        ModNumber.Text = Convert.ToString(lineNumber + 1);
-                    }
-                }
+                ModName.Text = modName;
             }
-            catch (Exception ex)
+            catch (Exception ex) 
             {
                 MessageBox.Show($"Error loading mod data: {ex.Message}");
             }
@@ -77,47 +70,68 @@ namespace Blade_Sorcery_ModManager.View.UserControls
 
         private void EnableDisableButton_Click(object sender, RoutedEventArgs e)
         {
-            Button button = (Button)sender;
 
-            string modName = ModName.Text; // Get the mod name from the TextBlock
-            string modFolderPath = PathIO.Combine(config.ModDirectory, modName); // Mod folder path
-            string disabledFolderPath = PathIO.Combine(config.DisabledMods, modName); // Disabled mod folder path
-
-            if ((string)button.Tag == "Enabled")
+            try
             {
-                // Create the disabled mod directory if it doesn't already exist
-                Directory.CreateDirectory(PathIO.Combine(config.DisabledMods));
+                Button button = (Button)sender;
 
-                // Copy the contents of the mod folder to the disabled folder
-                CopyDirectory(modFolderPath, disabledFolderPath);
+                Brush enabledColour = (Brush)FindResource("EnabledBtnBgBrush");
 
-                // Delete the mod folder
-                Directory.Delete(modFolderPath, true);
+                string modName = ModName.Text; // Get the mod name from the TextBlock
+                string modFolderPath = PathIO.Combine(config.ModDirectory, modName); // Mod folder path
+                string disabledFolderPath = PathIO.Combine(config.DisabledMods, modName); // Disabled mod folder path
 
-                button.Content = "Disabled";
-                button.Background = Brushes.Red;
-                button.Tag = "Disabled"; // Update the tag
-            }
-            else if ((string)button.Tag == "Disabled")
-            {
-                // Enable the mod
-
-                if (!Directory.Exists(disabledFolderPath))
+                if ((string)button.Tag == "Enabled")
                 {
-                    // Handle the case where the mod is not found in the _disabled directory
-                    MessageBox.Show($"Mod '{modName}' not found in the _disabled directory.");
-                    return;
+                    using (DataManager _manager = new DataManager(connectString))
+                    {
+                        _manager.UpdateStateData(modName, "Disabled");
+                    }
+
+                    button.Content = "Disabled";
+                    button.Background = Brushes.Red;
+                    button.Tag = "Disabled";
+
+                    // Create the disabled mod directory if it doesn't already exist
+                    Directory.CreateDirectory(PathIO.Combine(config.DisabledMods));
+
+                    // Copy the contents of the mod folder to the disabled folder
+                    CopyDirectory(modFolderPath, disabledFolderPath);
+
+                    // Delete the mod folder
+                    Directory.Delete(modFolderPath, true);
+
                 }
+                else if ((string)button.Tag == "Disabled")
+                {
+                    // Enable the mod
 
-                // Copy the contents of the disabled folder back to the mod folder
-                CopyDirectory(disabledFolderPath, modFolderPath);
+                    using (DataManager _manager = new DataManager(connectString))
+                    {
+                        _manager.UpdateStateData(modName, "Enabled");
+                    }
 
-                // Delete the disabled folder
-                Directory.Delete(disabledFolderPath, true);
+                    button.Content = "Enabled";
+                    button.Background = enabledColour;
+                    button.Tag = "Enabled";
 
-                button.Content = "Enabled";
-                button.Background = Brushes.Green;
-                button.Tag = "Enabled"; // Update the tag
+                    if (!Directory.Exists(disabledFolderPath))
+                    {
+                        // Handle the case where the mod is not found in the _disabled directory
+                        MessageBox.Show($"Mod '{modName}' not found in the _disabled directory.");
+                        return;
+                    }
+
+                    // Copy the contents of the disabled folder back to the mod folder
+                    CopyDirectory(disabledFolderPath, modFolderPath);
+
+                    // Delete the disabled folder
+                    Directory.Delete(disabledFolderPath, true);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in EnableDisableButton_Click: {ex.Message}");
             }
         }
 
